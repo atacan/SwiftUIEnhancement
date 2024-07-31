@@ -37,8 +37,32 @@ public struct PatientTextField: View {
 public struct PatientTextEditor: NSViewRepresentable {
     @Binding var text: String
 
-    public init(text: Binding<String>) {
+    public var isAutomaticDataDetectionEnabled: Bool
+    public var isAutomaticLinkDetectionEnabled: Bool
+    public var isAutomaticSpellingCorrectionEnabled: Bool
+    public var isAutomaticTextCompletionEnabled: Bool
+    public var isAutomaticTextReplacementEnabled: Bool
+    public var isContinuousSpellCheckingEnabled: Bool
+    public var isGrammarCheckingEnabled: Bool
+
+    public init(
+        text: Binding<String>,
+        isAutomaticDataDetectionEnabled: Bool = true,
+        isAutomaticLinkDetectionEnabled: Bool = true,
+        isAutomaticSpellingCorrectionEnabled: Bool = true,
+        isAutomaticTextCompletionEnabled: Bool = true,
+        isAutomaticTextReplacementEnabled: Bool = true,
+        isContinuousSpellCheckingEnabled: Bool = true,
+        isGrammarCheckingEnabled: Bool = true
+    ) {
         self._text = text
+        self.isAutomaticDataDetectionEnabled = isAutomaticDataDetectionEnabled
+        self.isAutomaticLinkDetectionEnabled = isAutomaticLinkDetectionEnabled
+        self.isAutomaticSpellingCorrectionEnabled = isAutomaticSpellingCorrectionEnabled
+        self.isAutomaticTextCompletionEnabled = isAutomaticTextCompletionEnabled
+        self.isAutomaticTextReplacementEnabled = isAutomaticTextReplacementEnabled
+        self.isContinuousSpellCheckingEnabled = isContinuousSpellCheckingEnabled
+        self.isGrammarCheckingEnabled = isGrammarCheckingEnabled
     }
 
     public func makeCoordinator() -> Coordinator {
@@ -66,23 +90,23 @@ public struct PatientTextEditor: NSViewRepresentable {
         textView.isIncrementalSearchingEnabled = true
         textView.usesFindBar = true
 
-        textView.isAutomaticDataDetectionEnabled = true
-        textView.isAutomaticLinkDetectionEnabled = true
-        textView.isAutomaticSpellingCorrectionEnabled = true
-        textView.isAutomaticTextCompletionEnabled = true
-        textView.isAutomaticTextReplacementEnabled = true
-        textView.isContinuousSpellCheckingEnabled = true
-        textView.isGrammarCheckingEnabled = true
+        textView.isAutomaticDataDetectionEnabled = self.isAutomaticDataDetectionEnabled
+        textView.isAutomaticLinkDetectionEnabled = self.isAutomaticLinkDetectionEnabled
+        textView.isAutomaticSpellingCorrectionEnabled = self.isAutomaticSpellingCorrectionEnabled
+        textView.isAutomaticTextCompletionEnabled = self.isAutomaticTextCompletionEnabled
+        textView.isAutomaticTextReplacementEnabled = self.isAutomaticTextReplacementEnabled
+        textView.isContinuousSpellCheckingEnabled = self.isContinuousSpellCheckingEnabled
+        textView.isGrammarCheckingEnabled = self.isGrammarCheckingEnabled
 
         textView.string = text
         return scrollView
     }
 
     public func updateNSView(_ nsView: NSScrollView, context: Context) {
-//        guard let textView = nsView.documentView as? NSTextView else {
-//            return
-//        }
-//        textView.string = text
+        //        guard let textView = nsView.documentView as? NSTextView else {
+        //            return
+        //        }
+        //        textView.string = text
     }
 
     public class Coordinator: NSObject, NSTextViewDelegate {
@@ -152,10 +176,10 @@ public struct PatientAttributedTextEditor: NSViewRepresentable {
     }
 
     public func updateNSView(_ nsView: NSScrollView, context: Context) {
-//        guard let textView = nsView.documentView as? NSTextView else {
-//            return
-//        }
-//        textView.textStorage?.setAttributedString(text)
+        //        guard let textView = nsView.documentView as? NSTextView else {
+        //            return
+        //        }
+        //        textView.textStorage?.setAttributedString(text)
     }
 
     public class Coordinator: NSObject, NSTextViewDelegate {
