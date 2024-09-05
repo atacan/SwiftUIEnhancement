@@ -40,7 +40,7 @@ extension View {
         window.title = title
         window.titlebarAppearsTransparent = true
         window.isMovableByWindowBackground = true
-        window.makeKeyAndOrderFront(nil)
         window.contentView = NSHostingView(rootView: self)
+        window.orderFront(nil)
     }
 }
