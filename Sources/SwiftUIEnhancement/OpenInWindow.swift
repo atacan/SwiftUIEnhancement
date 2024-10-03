@@ -28,7 +28,11 @@ extension View {
     }
     
     @MainActor
-    public func openInNewWindow(title: String, rect: CGRect = .init(x: 20, y: 20, width: 680, height: 600)) {
+    public func openInNewWindow(
+        title: String,
+        rect: CGRect = .init(x: 20, y: 20, width: 680, height: 700),
+        makeKey: Bool = false
+    ) {
         let window = NSWindow(
             contentRect: rect,
             styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
@@ -36,11 +40,21 @@ extension View {
             defer: false
         )
         window.center()
+        let centerFrame = window.frame
         window.isReleasedWhenClosed = false
         window.title = title
         window.titlebarAppearsTransparent = true
         window.isMovableByWindowBackground = true
         window.contentView = NSHostingView(rootView: self)
-        window.orderFront(nil)
+        if makeKey {
+            window.orderFront(nil)
+        } else {
+            window.makeKeyAndOrderFront(nil)
+        }
+        window.animator().setFrame(
+            .init(x: centerFrame.minX + Double.random(in: -50...50), y: centerFrame.minY + Double.random(in: -50...50), width: centerFrame.width, height: centerFrame.height),
+            display: true,
+            animate: true
+        )
     }
 }

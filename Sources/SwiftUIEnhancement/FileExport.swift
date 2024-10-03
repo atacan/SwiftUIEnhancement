@@ -8,7 +8,7 @@ import UniformTypeIdentifiers
 
 public struct TextFile: FileDocument {
     // tell the system we support only plain text
-    public static var readableContentTypes = [UTType.json, .text, .log]
+    public static var readableContentTypes = [UTType.json, .text, .log, .html, .plainText]
 
     // by default our document is empty
     public var text = ""
