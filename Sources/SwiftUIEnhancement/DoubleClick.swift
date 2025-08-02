@@ -234,4 +234,106 @@ class ClickListeningView: NSView {
         clickCount = 0
     }
 }
+
+#Preview("Double Click Demo") {
+    #if os(macOS)
+    VStack(spacing: 20) {
+        Text("Double Click Demo (macOS only)")
+            .font(.largeTitle)
+            .fontWeight(.bold)
+        
+        VStack(spacing: 15) {
+            Text("Double Click Handler")
+                .font(.headline)
+            
+            Rectangle()
+                .fill(Color.blue.opacity(0.7))
+                .frame(width: 150, height: 100)
+                .overlay(
+                    Text("Double click me!")
+                        .foregroundColor(.white)
+                        .fontWeight(.semibold)
+                )
+                .cornerRadius(12)
+                .onDoubleClick {
+                    print("Double click detected!")
+                }
+        }
+        .padding()
+        .background(Color.blue.opacity(0.1))
+        .cornerRadius(12)
+        
+        VStack(spacing: 15) {
+            Text("Multi-Click Handler")
+                .font(.headline)
+            
+            Rectangle()
+                .fill(Color.green.opacity(0.7))
+                .frame(width: 150, height: 100)
+                .overlay(
+                    VStack {
+                        Text("Click me!")
+                            .foregroundColor(.white)
+                            .fontWeight(.semibold)
+                        Text("Single, Double, or Triple")
+                            .foregroundColor(.white)
+                            .font(.caption)
+                    }
+                )
+                .cornerRadius(12)
+                .onClick(
+                    onSingleClick: {
+                        print("Single click detected!")
+                    },
+                    onDoubleClick: {
+                        print("Double click detected!")
+                    },
+                    onTripleClick: {
+                        print("Triple click detected!")
+                    }
+                )
+        }
+        .padding()
+        .background(Color.green.opacity(0.1))
+        .cornerRadius(12)
+        
+        VStack(spacing: 10) {
+            Text("Instructions:")
+                .font(.headline)
+            
+            VStack(alignment: .leading, spacing: 5) {
+                Text("• Single click: Detected after delay if no more clicks")
+                Text("• Double click: Detected immediately on second click")
+                Text("• Triple click: Detected immediately on third click")
+            }
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(12)
+        
+        Text("Check console output to see click events")
+            .font(.caption)
+            .foregroundColor(.secondary)
+    }
+    .padding()
+    #else
+    VStack {
+        Text("Double Click Demo")
+            .font(.largeTitle)
+            .fontWeight(.bold)
+        
+        Text("This feature is only available on macOS")
+            .font(.title2)
+            .foregroundColor(.secondary)
+            .multilineTextAlignment(.center)
+        
+        Image(systemName: "laptopcomputer")
+            .font(.system(size: 80))
+            .foregroundColor(.gray)
+    }
+    .padding()
+    #endif
+}
 #endif

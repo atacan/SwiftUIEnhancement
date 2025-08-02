@@ -106,6 +106,107 @@ struct SplashView: View {
     }
 }
 
-#Preview {
-    SplashView()
+#Preview("Splash View Demo") {
+    VStack(spacing: 30) {
+        Text("Splash View Components")
+            .font(.largeTitle)
+            .fontWeight(.bold)
+        
+        VStack(spacing: 20) {
+            Text("SplashingButton")
+                .font(.headline)
+            
+            HStack(spacing: 20) {
+                if #available(macOS 14.0, iOS 17.0, *) {
+                    SplashingButton(imageSystemName: "heart.fill") {
+                        print("Heart button tapped!")
+                    }
+                    .foregroundColor(.red)
+                    
+                    SplashingButton(imageSystemName: "star.fill") {
+                        print("Star button tapped!")
+                    }
+                    .foregroundColor(.yellow)
+                    
+                    SplashingButton(imageSystemName: "thumbs.up.fill") {
+                        print("Thumbs up button tapped!")
+                    }
+                    .foregroundColor(.blue)
+                } else {
+                    Text("SplashingButton requires macOS 14.0+ or iOS 17.0+")
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        .padding()
+        .background(Color.blue.opacity(0.1))
+        .cornerRadius(12)
+        
+        VStack(spacing: 20) {
+            Text("Standalone Splash Effects")
+                .font(.headline)
+            
+            HStack(spacing: 30) {
+                VStack {
+                    Text("Default Colors")
+                        .font(.caption)
+                    SplashView()
+                        .frame(width: 60, height: 60)
+                }
+                
+                VStack {
+                    Text("Large Size")
+                        .font(.caption)
+                    SplashView()
+                        .frame(width: 100, height: 100)
+                        .scaleEffect(1.5)
+                }
+                
+                VStack {
+                    Text("With Background")
+                        .font(.caption)
+                    SplashView()
+                        .frame(width: 80, height: 80)
+                        .background(Color.black.opacity(0.1))
+                        .cornerRadius(40)
+                }
+            }
+        }
+        .padding()
+        .background(Color.green.opacity(0.1))
+        .cornerRadius(12)
+        
+        if #available(macOS 14.0, iOS 17.0, *) {
+            VStack {
+                Text("Interactive Demo")
+                    .font(.headline)
+                
+                Text("Tap the buttons above to see the splash animation effect!")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .padding()
+            .background(Color.orange.opacity(0.1))
+            .cornerRadius(12)
+        }
+        
+        VStack {
+            Text("Features")
+                .font(.headline)
+            
+            VStack(alignment: .leading, spacing: 5) {
+                Text("• Animated splash particles")
+                Text("• Customizable colors and gradients")
+                Text("• Bounce animation with phase animator")
+                Text("• Perfect for like/favorite buttons")
+            }
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+        }
+        .padding()
+        .background(Color.purple.opacity(0.1))
+        .cornerRadius(12)
+    }
+    .padding()
 }

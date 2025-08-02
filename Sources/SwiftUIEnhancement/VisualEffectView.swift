@@ -77,3 +77,155 @@ public struct VisualEffectView: UIViewRepresentable {
     }
 }
 #endif
+
+#Preview("Visual Effect View") {
+    VStack(spacing: 20) {
+        Text("Visual Effect View Demo")
+            .font(.largeTitle)
+            .fontWeight(.bold)
+        
+        ZStack {
+            // Background image/content
+            LinearGradient(
+                colors: [.blue, .purple, .pink],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .frame(height: 200)
+            
+            VStack(spacing: 15) {
+                #if os(macOS)
+                HStack(spacing: 15) {
+                    VisualEffectView(
+                        material: .hudWindow,
+                        blendingMode: .behindWindow,
+                        state: .active,
+                        emphasized: false
+                    )
+                    .frame(width: 120, height: 80)
+                    .overlay(
+                        VStack {
+                            Image(systemName: "star.fill")
+                                .foregroundColor(.white)
+                            Text("HUD Window")
+                                .foregroundColor(.white)
+                                .font(.caption)
+                        }
+                    )
+                    .cornerRadius(12)
+                    
+                    VisualEffectView(
+                        material: .sidebar,
+                        blendingMode: .behindWindow,
+                        state: .active,
+                        emphasized: true
+                    )
+                    .frame(width: 120, height: 80)
+                    .overlay(
+                        VStack {
+                            Image(systemName: "sidebar.left")
+                                .foregroundColor(.primary)
+                            Text("Sidebar")
+                                .foregroundColor(.primary)
+                                .font(.caption)
+                        }
+                    )
+                    .cornerRadius(12)
+                }
+                
+                HStack(spacing: 15) {
+                    VisualEffectView(
+                        material: .menu,
+                        blendingMode: .behindWindow,
+                        state: .active,
+                        emphasized: false
+                    )
+                    .frame(width: 120, height: 80)
+                    .overlay(
+                        VStack {
+                            Image(systemName: "list.bullet")
+                                .foregroundColor(.primary)
+                            Text("Menu")
+                                .foregroundColor(.primary)
+                                .font(.caption)
+                        }
+                    )
+                    .cornerRadius(12)
+                    
+                    VisualEffectView(
+                        material: .popover,
+                        blendingMode: .behindWindow,
+                        state: .active,
+                        emphasized: false
+                    )
+                    .frame(width: 120, height: 80)
+                    .overlay(
+                        VStack {
+                            Image(systemName: "bubble.left")
+                                .foregroundColor(.primary)
+                            Text("Popover")
+                                .foregroundColor(.primary)
+                                .font(.caption)
+                        }
+                    )
+                    .cornerRadius(12)
+                }
+                #endif
+                
+                #if os(iOS)
+                VStack(spacing: 15) {
+                    VisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
+                        .frame(height: 60)
+                        .overlay(
+                            HStack {
+                                Image(systemName: "star.fill")
+                                    .foregroundColor(.primary)
+                                Text("System Material")
+                                    .foregroundColor(.primary)
+                                Spacer()
+                            }
+                            .padding()
+                        )
+                        .cornerRadius(12)
+                    
+                    VisualEffectView(effect: UIBlurEffect(style: .systemThinMaterial))
+                        .frame(height: 60)
+                        .overlay(
+                            HStack {
+                                Image(systemName: "circle.fill")
+                                    .foregroundColor(.primary)
+                                Text("Thin Material")
+                                    .foregroundColor(.primary)
+                                Spacer()
+                            }
+                            .padding()
+                        )
+                        .cornerRadius(12)
+                    
+                    VisualEffectView(effect: UIBlurEffect(style: .systemThickMaterial))
+                        .frame(height: 60)
+                        .overlay(
+                            HStack {
+                                Image(systemName: "square.fill")
+                                    .foregroundColor(.primary)
+                                Text("Thick Material")
+                                    .foregroundColor(.primary)
+                                Spacer()
+                            }
+                            .padding()
+                        )
+                        .cornerRadius(12)
+                }
+                #endif
+            }
+            .padding()
+        }
+        .cornerRadius(16)
+        
+        Text("Visual effects provide translucent backgrounds that blend with content behind them")
+            .font(.caption)
+            .foregroundColor(.secondary)
+            .multilineTextAlignment(.center)
+    }
+    .padding()
+}

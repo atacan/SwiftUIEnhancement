@@ -39,3 +39,29 @@ extension View {
         ))
     }
 }
+
+#Preview("Corner Radius with Border") {
+    VStack(spacing: 20) {
+        Rectangle()
+            .fill(Color.blue)
+            .frame(width: 100, height: 100)
+            .cornerRadiusWithBorder(radius: 10)
+        
+        Rectangle()
+            .fill(Color.green)
+            .frame(width: 100, height: 100)
+            .cornerRadiusWithBorder(radius: 20, borderLineWidth: 3, borderColor: .red)
+        
+        Text("Hello World")
+            .padding()
+            .background(Color.yellow)
+            .cornerRadiusWithBorder(radius: 15, borderLineWidth: 2, borderColor: .purple)
+        
+        Image(systemName: "star.fill")
+            .font(.system(size: 50))
+            .foregroundColor(.orange)
+            .padding()
+            .cornerRadiusWithBorder(radius: 25, borderLineWidth: 4, borderColor: .black)
+    }
+    .padding()
+}

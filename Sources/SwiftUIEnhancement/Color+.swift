@@ -163,6 +163,99 @@ extension CodableCGColor {
     }
 }
 
+#Preview("Color Extensions Demo") {
+    struct ColorDemo: View {
+        @State private var randomColors: [(bg: CodableCGColor, fg: CodableCGColor)] = []
+        
+        var body: some View {
+            VStack(spacing: 20) {
+                VStack {
+                    Text("Random Background/Foreground Colors")
+                        .font(.headline)
+                    
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 10) {
+                        ForEach(0..<randomColors.count, id: \.self) { index in
+                            if #available(iOS 15.0, macOS 11.0, *) {
+                                Text("Sample \(index + 1)")
+                                    .padding()
+                                    .background(randomColors[index].bg.swiftuiColor)
+                                    .foregroundColor(randomColors[index].fg.swiftuiColor)
+                                    .cornerRadius(8)
+                            }
+                        }
+                    }
+                    
+                    Button("Generate New Colors") {
+                        randomColors = (0..<6).map { _ in CodableCGColor.randomBGFG() }
+                    }
+                }
+                .padding()
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(12)
+                
+                #if os(macOS) || (os(iOS) && compiler(>=5.9))
+                VStack {
+                    Text("Brightness Adjustments")
+                        .font(.headline)
+                    
+                    HStack(spacing: 20) {
+                        VStack {
+                            Text("Original")
+                            Rectangle()
+                                .fill(Color.blue)
+                                .frame(width: 60, height: 60)
+                        }
+                        
+                        #if os(macOS)
+                        VStack {
+                            Text("Brighter")
+                            Rectangle()
+                                .fill(Color.blue.brighter())
+                                .frame(width: 60, height: 60)
+                        }
+                        
+                        VStack {
+                            Text("Darker")
+                            Rectangle()
+                                .fill(Color.blue.darker())
+                                .frame(width: 60, height: 60)
+                        }
+                        #endif
+                        
+                        #if os(iOS) && compiler(>=5.9)
+                        if #available(iOS 15.0, *) {
+                            VStack {
+                                Text("Brighter")
+                                Rectangle()
+                                    .fill(Color.blue.brighter())
+                                    .frame(width: 60, height: 60)
+                            }
+                            
+                            VStack {
+                                Text("Darker")
+                                Rectangle()
+                                    .fill(Color.blue.darker())
+                                    .frame(width: 60, height: 60)
+                            }
+                        }
+                        #endif
+                    }
+                }
+                .padding()
+                .background(Color.green.opacity(0.1))
+                .cornerRadius(12)
+                #endif
+            }
+            .padding()
+            .onAppear {
+                randomColors = (0..<6).map { _ in CodableCGColor.randomBGFG() }
+            }
+        }
+    }
+    
+    return ColorDemo()
+}
+
 // Helper extension to modify brightness of a Color
 #if os(macOS)
 extension Color {

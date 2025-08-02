@@ -55,3 +55,101 @@ extension View {
         )
     }
 }
+
+#Preview("Glow Effects") {
+    ScrollView {
+        VStack(spacing: 30) {
+            VStack {
+                Text("Basic Glow Effects")
+                    .font(.headline)
+                
+                HStack(spacing: 20) {
+                    Text("Red Glow")
+                        .padding()
+                        .background(Color.black)
+                        .foregroundColor(.white)
+                        .glow(color: .red, radius: 20)
+                    
+                    Text("Blue Glow")
+                        .padding()
+                        .background(Color.black)
+                        .foregroundColor(.white)
+                        .glow(color: .blue, radius: 30)
+                    
+                    Text("Green Glow")
+                        .padding()
+                        .background(Color.black)
+                        .foregroundColor(.white)
+                        .glow(color: .green, radius: 25)
+                }
+            }
+            .padding()
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(12)
+            
+            VStack {
+                Text("Blurry Glow Effects")
+                    .font(.headline)
+                
+                HStack(spacing: 20) {
+                    Circle()
+                        .fill(Color.yellow)
+                        .frame(width: 60, height: 60)
+                        .glowBlurry(color: .orange, radius: 40)
+                    
+                    Rectangle()
+                        .fill(Color.purple)
+                        .frame(width: 60, height: 60)
+                        .glowBlurry(color: .pink, radius: 35)
+                    
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.blue)
+                        .frame(width: 60, height: 60)
+                        .glowBlurry(color: .blue, radius: 30)
+                }
+            }
+            .padding()
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(12)
+            
+            VStack {
+                Text("Multicolor Glow")
+                    .font(.headline)
+                
+                Text("AMAZING")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .multicolorGlow()
+            }
+            .padding()
+            .background(Color.black)
+            .cornerRadius(12)
+            
+            VStack {
+                Text("Inner Shadow Effects")
+                    .font(.headline)
+                
+                HStack(spacing: 20) {
+                    Circle()
+                        .fill(Color.green)
+                        .frame(width: 80, height: 80)
+                        .innerShadow(using: Circle())
+                    
+                    Rectangle()
+                        .fill(Color.blue)
+                        .frame(width: 80, height: 80)
+                        .innerShadow(using: Rectangle(), color: .red, width: 4, blur: 8)
+                    
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Color.orange)
+                        .frame(width: 80, height: 80)
+                        .innerShadow(using: RoundedRectangle(cornerRadius: 20), angle: .degrees(45))
+                }
+            }
+            .padding()
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(12)
+        }
+        .padding()
+    }
+}

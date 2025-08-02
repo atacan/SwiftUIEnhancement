@@ -30,3 +30,38 @@ public struct DynamicLazyGrid<Content: View>: View {
         }
     }
 }
+
+#Preview("Dynamic Lazy Grid") {
+    struct GridDemo: View {
+        @State private var axis: Axis.Set = .vertical
+        
+        var body: some View {
+            VStack {
+                Picker("Axis", selection: $axis) {
+                    Text("Vertical").tag(Axis.Set.vertical)
+                    Text("Horizontal").tag(Axis.Set.horizontal)
+                }
+                .pickerStyle(.segmented)
+                .padding()
+                
+                ScrollView(axis == .horizontal ? .horizontal : .vertical) {
+                    DynamicLazyGrid(
+                        axis: axis,
+                        columns: Array(repeating: GridItem(.flexible()), count: 3),
+                        spacing: 10
+                    ) {
+                        ForEach(1...20, id: \.self) { index in
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.blue.opacity(0.7))
+                                .frame(width: 80, height: 80)
+                                .overlay(Text("\(index)").foregroundColor(.white))
+                        }
+                    }
+                }
+                .frame(maxHeight: 400)
+            }
+        }
+    }
+    
+    return GridDemo()
+}

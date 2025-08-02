@@ -101,3 +101,93 @@ public struct PopupButton<Key: Nameable>: UIViewRepresentable {
     }
 }
 #endif
+
+#Preview("Popup Button") {
+    struct SampleOption: Nameable {
+        let id = UUID()
+        let displayName: String
+    }
+    
+    struct PopupButtonDemo: View {
+        @State private var selectedOption = SampleOption(displayName: "Option 1")
+        
+        let options = [
+            SampleOption(displayName: "Option 1"),
+            SampleOption(displayName: "Option 2"),
+            SampleOption(displayName: "Option 3"),
+            SampleOption(displayName: "Very Long Option Name That Tests Wrapping"),
+            SampleOption(displayName: "🎨 Option with Emoji"),
+            SampleOption(displayName: "Final Option")
+        ]
+        
+        var body: some View {
+            VStack(spacing: 30) {
+                Text("Popup Button Demo")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                
+                VStack(spacing: 15) {
+                    Text("Cross-platform PopupButton")
+                        .font(.headline)
+                    
+                    PopupButton(selectedKey: $selectedOption, keys: options)
+                        .frame(width: 200)
+                        #if os(macOS)
+                        .controlSize(.large)
+                        #endif
+                }
+                .padding()
+                .background(Color.blue.opacity(0.1))
+                .cornerRadius(12)
+                
+                VStack(spacing: 10) {
+                    Text("Selected Option:")
+                        .font(.headline)
+                    
+                    Text(selectedOption.displayName)
+                        .font(.title2)
+                        .foregroundColor(.blue)
+                        .padding()
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(8)
+                }
+                
+                VStack(spacing: 10) {
+                    Text("Available Options:")
+                        .font(.headline)
+                    
+                    LazyVStack(spacing: 8) {
+                        ForEach(options) { option in
+                            HStack {
+                                Image(systemName: option.id == selectedOption.id ? "checkmark.circle.fill" : "circle")
+                                    .foregroundColor(option.id == selectedOption.id ? .green : .gray)
+                                Text(option.displayName)
+                                    .fontWeight(option.id == selectedOption.id ? .semibold : .regular)
+                                Spacer()
+                            }
+                            .padding(.horizontal)
+                        }
+                    }
+                    .padding()
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(12)
+                }
+                
+                #if os(macOS)
+                Text("On macOS: Uses NSPopUpButton")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                #endif
+                
+                #if os(iOS)
+                Text("On iOS: Uses UIButton with UIMenu")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                #endif
+            }
+            .padding()
+        }
+    }
+    
+    return PopupButtonDemo()
+}

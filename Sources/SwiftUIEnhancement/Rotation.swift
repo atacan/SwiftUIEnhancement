@@ -53,3 +53,104 @@ extension View {
         Rotated(self, angle: angle)
     }
 }
+
+#Preview("Rotation Demo") {
+    VStack(spacing: 30) {
+        Text("Rotation Examples")
+            .font(.largeTitle)
+            .fontWeight(.bold)
+        
+        HStack(spacing: 30) {
+            VStack {
+                Text("Original")
+                    .font(.caption)
+                Rectangle()
+                    .fill(Color.blue)
+                    .frame(width: 60, height: 40)
+                    .overlay(Text("Text").foregroundColor(.white))
+            }
+            
+            VStack {
+                Text("-90°")
+                    .font(.caption)
+                Rectangle()
+                    .fill(Color.red)
+                    .frame(width: 60, height: 40)
+                    .overlay(Text("Text").foregroundColor(.white))
+                    .rotated(.degrees(-90))
+            }
+            
+            VStack {
+                Text("45°")
+                    .font(.caption)
+                Rectangle()
+                    .fill(Color.green)
+                    .frame(width: 60, height: 40)
+                    .overlay(Text("Text").foregroundColor(.white))
+                    .rotated(.degrees(45))
+            }
+        }
+        
+        HStack(spacing: 30) {
+            VStack {
+                Text("90°")
+                    .font(.caption)
+                Rectangle()
+                    .fill(Color.orange)
+                    .frame(width: 60, height: 40)
+                    .overlay(Text("Text").foregroundColor(.white))
+                    .rotated(.degrees(90))
+            }
+            
+            VStack {
+                Text("180°")
+                    .font(.caption)
+                Rectangle()
+                    .fill(Color.purple)
+                    .frame(width: 60, height: 40)
+                    .overlay(Text("Text").foregroundColor(.white))
+                    .rotated(.degrees(180))
+            }
+            
+            VStack {
+                Text("270°")
+                    .font(.caption)
+                Rectangle()
+                    .fill(Color.blue)
+                    .frame(width: 60, height: 40)
+                    .overlay(Text("Text").foregroundColor(.white))
+                    .rotated(.degrees(270))
+            }
+        }
+        
+        VStack {
+            Text("Complex Shape Rotation")
+                .font(.headline)
+            
+            HStack(spacing: 20) {
+                Image(systemName: "arrow.right")
+                    .font(.system(size: 30))
+                    .foregroundColor(.blue)
+                
+                Image(systemName: "arrow.right")
+                    .font(.system(size: 30))
+                    .foregroundColor(.red)
+                    .rotated(.degrees(45))
+                
+                Image(systemName: "arrow.right")
+                    .font(.system(size: 30))
+                    .foregroundColor(.green)
+                    .rotated(.degrees(90))
+                
+                Image(systemName: "arrow.right")
+                    .font(.system(size: 30))
+                    .foregroundColor(.orange)
+                    .rotated(.degrees(135))
+            }
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(12)
+    }
+    .padding()
+}
