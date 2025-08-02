@@ -1,4 +1,3 @@
-import AppKit
 import SwiftUI
 
 public struct PatientTextField: View {
@@ -34,6 +33,8 @@ public struct PatientTextField: View {
     }
 }
 
+#if canImport(AppKit)
+import AppKit
 public struct PatientTextEditor: NSViewRepresentable {
     @Binding var text: String
 
@@ -197,6 +198,7 @@ public struct PatientAttributedTextEditor: NSViewRepresentable {
         }
     }
 }
+#endif
 
 #if DEBUG
 struct ContentView: View {

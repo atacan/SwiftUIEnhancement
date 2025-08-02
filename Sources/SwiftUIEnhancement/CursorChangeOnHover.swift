@@ -1,3 +1,5 @@
+#if canImport(AppKit)
+import AppKit
 import SwiftUI
 
 extension View {
@@ -23,3 +25,4 @@ extension View {
         }
     }
 }
+#endif

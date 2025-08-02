@@ -1,3 +1,4 @@
+#if canImport(AppKit)
 import AppKit
 import Combine
 import SwiftUI
@@ -75,3 +76,4 @@ public struct NSPopoverHolderView<T: View>: NSViewRepresentable {
         }
     }
 }
+#endif

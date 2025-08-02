@@ -1,3 +1,4 @@
+#if os(macOS)
 import SwiftUI
 
 extension View {
@@ -233,3 +234,4 @@ class ClickListeningView: NSView {
         clickCount = 0
     }
 }
+#endif
