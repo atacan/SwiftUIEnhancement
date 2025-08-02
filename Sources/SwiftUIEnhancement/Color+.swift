@@ -140,3 +140,34 @@ extension CodableCGColor {
         return (l1 + 0.05) / (l2 + 0.05)
     }
 }
+
+// Helper extension to modify brightness of a Color
+extension Color {
+    public func brighter(by percentage: CGFloat = 0.1) -> Color {
+        var hue: CGFloat = 0
+        var saturation: CGFloat = 0
+        var brightness: CGFloat = 0
+        var alpha: CGFloat = 0
+
+        let nsColor = NSColor(self)
+        nsColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+
+        let newBrightness = min(brightness + percentage, 1.0) // Clamp brightness to 1.0
+
+        return Color(nsColor: NSColor(hue: hue, saturation: saturation, brightness: newBrightness, alpha: alpha))
+    }
+
+    public func darker(by percentage: CGFloat = 0.2) -> Color { // Added a similar helper for darkening
+        var hue: CGFloat = 0
+        var saturation: CGFloat = 0
+        var brightness: CGFloat = 0
+        var alpha: CGFloat = 0
+
+        let nsColor = NSColor(self)
+        nsColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+
+        let newBrightness = max(brightness - percentage, 0.0) // Clamp brightness to 0.0
+
+        return Color(nsColor: NSColor(hue: hue, saturation: saturation, brightness: newBrightness, alpha: alpha))
+    }
+}
