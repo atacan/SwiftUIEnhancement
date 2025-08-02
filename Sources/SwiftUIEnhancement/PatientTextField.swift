@@ -206,9 +206,11 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
+            #if canImport(AppKit)
             PatientTextEditor(text: $text)
                 .frame(width: 300, height: 200, alignment: .center)
                 .border(Color.gray)
+            #endif
             PatientTextField(text: $text)
             Text(text)
         }

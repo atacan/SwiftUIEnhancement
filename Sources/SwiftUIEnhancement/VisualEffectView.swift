@@ -1,3 +1,4 @@
+#if os(macOS)
 import SwiftUI
 
 /// Bridge AppKit's NSVisualEffectView into SwiftUI
@@ -53,3 +54,26 @@ public struct VisualEffectView: NSViewRepresentable {
         }
     }
 }
+#endif
+
+#if os(iOS)
+import SwiftUI
+import UIKit
+
+/// Bridge UIKit's UIVisualEffectView into SwiftUI for iOS
+public struct VisualEffectView: UIViewRepresentable {
+    var effect: UIVisualEffect?
+    
+    public init(effect: UIVisualEffect?) {
+        self.effect = effect
+    }
+    
+    public func makeUIView(context: Context) -> UIVisualEffectView {
+        UIVisualEffectView()
+    }
+    
+    public func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
+        uiView.effect = effect
+    }
+}
+#endif

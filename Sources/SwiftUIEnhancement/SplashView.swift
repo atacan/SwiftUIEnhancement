@@ -1,6 +1,6 @@
 import SwiftUI
 
-@available(macOS 14.0, *)
+@available(macOS 14.0, iOS 17.0, *)
 public struct SplashingButton: View {
     @State private var heartCount = 0
     @State private var isLoved = false
@@ -73,8 +73,8 @@ struct SplashView: View {
         ZStack {
             ForEach(0..<8) {
                 Circle()
-                    .foregroundStyle(
-                        .linearGradient(
+                    .fill(
+                        LinearGradient(
                             colors: [.green, .red],
                             startPoint: .bottom,
                             endPoint: .leading
@@ -88,8 +88,8 @@ struct SplashView: View {
             
             ForEach(0..<8) {
                 Circle()
-                    .foregroundStyle(
-                        .linearGradient(
+                    .fill(
+                        LinearGradient(
                             colors: [.green, streamBlue],
                             startPoint: .bottom,
                             endPoint: .leading

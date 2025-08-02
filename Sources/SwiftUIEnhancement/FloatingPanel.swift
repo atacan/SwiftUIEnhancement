@@ -1,3 +1,4 @@
+#if os(macOS)
 import SwiftUI
 
 /// An NSPanel subclass that implements floating panel traits.
@@ -132,3 +133,4 @@ public struct FloatingPanelModifier<PanelContent: View>: ViewModifier {
         panel?.makeKey()
     }
 }
+#endif

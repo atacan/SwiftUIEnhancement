@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if os(macOS)
 extension Color {
     public var data: Data? {
         try? NSKeyedArchiver.archivedData(withRootObject: NSColor(self), requiringSecureCoding: false)
@@ -15,10 +16,30 @@ extension Color {
         self = .init(nsColor: color)
     }
 }
+#endif
+
+#if os(iOS)
+@available(iOS 15.0, *)
+extension Color {
+    public var data: Data? {
+        try? NSKeyedArchiver.archivedData(withRootObject: UIColor(self), requiringSecureCoding: false)
+    }
+
+    public init?(data: Data?) {
+        guard let data,
+              let color = try? NSKeyedUnarchiver.unarchivedObject(ofClass: UIColor.self, from: data)
+        else {
+            return nil
+        }
+        self = .init(uiColor: color)
+    }
+}
+#endif
 
 public struct CodableCGColor: Codable, Sendable {
     public var cgColor: CGColor
 
+    @available(iOS 15.0, macOS 11.0, *)
     public var swiftuiColor: Color {
         get {
             Color(cgColor: cgColor)
@@ -39,6 +60,7 @@ public struct CodableCGColor: Codable, Sendable {
         self.cgColor = cgColor
     }
 
+    @available(iOS 14.0, macOS 11.0, *)
     public init?(color: Color) {
         guard let cgColor = color.cgColor else {
             return nil
@@ -142,6 +164,7 @@ extension CodableCGColor {
 }
 
 // Helper extension to modify brightness of a Color
+#if os(macOS)
 extension Color {
     public func brighter(by percentage: CGFloat = 0.1) -> Color {
         var hue: CGFloat = 0
@@ -171,3 +194,37 @@ extension Color {
         return Color(nsColor: NSColor(hue: hue, saturation: saturation, brightness: newBrightness, alpha: alpha))
     }
 }
+#endif
+
+#if os(iOS)
+@available(iOS 15.0, *)
+extension Color {
+    public func brighter(by percentage: CGFloat = 0.1) -> Color {
+        var hue: CGFloat = 0
+        var saturation: CGFloat = 0
+        var brightness: CGFloat = 0
+        var alpha: CGFloat = 0
+
+        let uiColor = UIColor(self)
+        uiColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+
+        let newBrightness = min(brightness + percentage, 1.0) // Clamp brightness to 1.0
+
+        return Color(uiColor: UIColor(hue: hue, saturation: saturation, brightness: newBrightness, alpha: alpha))
+    }
+
+    public func darker(by percentage: CGFloat = 0.2) -> Color { // Added a similar helper for darkening
+        var hue: CGFloat = 0
+        var saturation: CGFloat = 0
+        var brightness: CGFloat = 0
+        var alpha: CGFloat = 0
+
+        let uiColor = UIColor(self)
+        uiColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
+
+        let newBrightness = max(brightness - percentage, 0.0) // Clamp brightness to 0.0
+
+        return Color(uiColor: UIColor(hue: hue, saturation: saturation, brightness: newBrightness, alpha: alpha))
+    }
+}
+#endif
