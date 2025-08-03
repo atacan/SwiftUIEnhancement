@@ -145,42 +145,66 @@ extension VisualEffectView: NSViewRepresentable {
 #if os(iOS)
 extension VisualEffectView: UIViewRepresentable {
     public func makeUIView(context: Context) -> UIVisualEffectView {
-        UIVisualEffectView()
+        context.coordinator.visualEffectView
     }
 
     public func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
-        uiView.effect = effect
+        context.coordinator.update(
+            material: material,
+            blendingMode: blendingMode,
+            state: state,
+            emphasized: emphasized
+        )
     }
 
-    private var effect: UIVisualEffect? {
-        if state == .inactive {
-            return nil
+    public func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    public class Coordinator {
+        let visualEffectView = UIVisualEffectView()
+
+        init() {}
+
+        func update(
+            material: VisualEffectView.Material,
+            blendingMode: VisualEffectView.BlendingMode,
+            state: VisualEffectView.State,
+            emphasized: Bool
+        ) {
+            visualEffectView.effect = effect(for: material, state: state)
         }
-        let style = blurStyle
-        return UIBlurEffect(style: style)
-    }
 
-    private var blurStyle: UIBlurEffect.Style {
-        switch material {
-        case .appearanceBased: return .regular
-        case .light: return .light
-        case .dark: return .dark
-        case .titlebar: return .systemChromeMaterial
-        case .selection: return .prominent
-        case .menu: return .systemThinMaterial
-        case .popover: return .systemThinMaterial
-        case .sidebar: return .systemMaterial
-        case .mediumLight: return .systemMaterialLight
-        case .ultraDark: return .systemMaterialDark
-        case .headerView: return .systemThickMaterial
-        case .sheet: return .systemUltraThinMaterial
-        case .windowBackground: return .systemMaterial
-        case .hudWindow: return .systemChromeMaterial
-        case .fullScreenUI: return .systemUltraThinMaterial
-        case .toolTip: return .systemUltraThinMaterial
-        case .contentBackground: return .systemMaterial
-        case .underWindowBackground: return .extraLight
-        case .underPageBackground: return .light
+        private func effect(for material: VisualEffectView.Material, state: VisualEffectView.State) -> UIVisualEffect? {
+            if state == .inactive {
+                return nil
+            }
+            let style = blurStyle(for: material)
+            return UIBlurEffect(style: style)
+        }
+
+        private func blurStyle(for material: VisualEffectView.Material) -> UIBlurEffect.Style {
+            switch material {
+            case .appearanceBased: return .regular
+            case .light: return .light
+            case .dark: return .dark
+            case .titlebar: return .systemChromeMaterial
+            case .selection: return .prominent
+            case .menu: return .systemThinMaterial
+            case .popover: return .systemThinMaterial
+            case .sidebar: return .systemMaterial
+            case .mediumLight: return .systemMaterialLight
+            case .ultraDark: return .systemMaterialDark
+            case .headerView: return .systemThickMaterial
+            case .sheet: return .systemUltraThinMaterial
+            case .windowBackground: return .systemMaterial
+            case .hudWindow: return .systemChromeMaterial
+            case .fullScreenUI: return .systemUltraThinMaterial
+            case .toolTip: return .systemUltraThinMaterial
+            case .contentBackground: return .systemMaterial
+            case .underWindowBackground: return .extraLight
+            case .underPageBackground: return .light
+            }
         }
     }
 }
@@ -202,74 +226,76 @@ extension VisualEffectView: UIViewRepresentable {
             .frame(height: 200)
             
             VStack(spacing: 15) {
-                HStack(spacing: 15) {
-                    VisualEffectView(
-                        material: .hudWindow,
-                        blendingMode: .behindWindow,
-                        state: .active,
-                        emphasized: false
-                    )
-                    .frame(width: 120, height: 80)
-                    .overlay(
-                        VStack {
-                            Image(systemName: "star.fill")
-                            Text("HUD Window")
-                        }
-                        .foregroundColor(.primary)
-                        .font(.caption)
-                    )
-                    .cornerRadius(12)
-                    
-                    VisualEffectView(
-                        material: .sidebar,
-                        blendingMode: .behindWindow,
-                        state: .active,
-                        emphasized: true
-                    )
-                    .frame(width: 120, height: 80)
-                    .overlay(
-                        VStack {
-                            Image(systemName: "sidebar.left")
-                            Text("Sidebar")
-                        }
-                        .foregroundColor(.primary)
-                        .font(.caption)
-                    )
-                    .cornerRadius(12)
-                    
-                    VisualEffectView(
-                        material: .menu,
-                        blendingMode: .behindWindow,
-                        state: .active,
-                        emphasized: false
-                    )
-                    .frame(width: 120, height: 80)
-                    .overlay(
-                        VStack {
-                            Image(systemName: "list.bullet")
-                            Text("Menu")
-                        }
-                        .foregroundColor(.primary)
-                        .font(.caption)
-                    )
-                    .cornerRadius(12)
-                    
-                    VisualEffectView(
-                        material: .popover,
-                        blendingMode: .behindWindow,
-                        state: .active,
-                        emphasized: false
-                    )
-                    .frame(width: 120, height: 80)
-                    .overlay(
-                        VStack {
-                            Image(systemName: "bubble.left")
-                            Text("Popover")
-                        }
-                        .foregroundColor(.primary)
-                        .font(.caption)
-                    )
-                    .cornerRadius(12)
+                ScrollView(.horizontal) {
+                    HStack(spacing: 15) {
+                        VisualEffectView(
+                            material: .hudWindow,
+                            blendingMode: .behindWindow,
+                            state: .active,
+                            emphasized: false
+                        )
+                        .frame(width: 120, height: 80)
+                        .overlay(
+                            VStack {
+                                Image(systemName: "star.fill")
+                                Text("HUD Window")
+                            }
+                                .foregroundColor(.primary)
+                                .font(.caption)
+                        )
+                        .cornerRadius(12)
+                        
+                        VisualEffectView(
+                            material: .sidebar,
+                            blendingMode: .behindWindow,
+                            state: .active,
+                            emphasized: true
+                        )
+                        .frame(width: 120, height: 80)
+                        .overlay(
+                            VStack {
+                                Image(systemName: "sidebar.left")
+                                Text("Sidebar")
+                            }
+                                .foregroundColor(.primary)
+                                .font(.caption)
+                        )
+                        .cornerRadius(12)
+                        
+                        VisualEffectView(
+                            material: .menu,
+                            blendingMode: .behindWindow,
+                            state: .active,
+                            emphasized: false
+                        )
+                        .frame(width: 120, height: 80)
+                        .overlay(
+                            VStack {
+                                Image(systemName: "list.bullet")
+                                Text("Menu")
+                            }
+                                .foregroundColor(.primary)
+                                .font(.caption)
+                        )
+                        .cornerRadius(12)
+                        
+                        VisualEffectView(
+                            material: .popover,
+                            blendingMode: .behindWindow,
+                            state: .active,
+                            emphasized: false
+                        )
+                        .frame(width: 120, height: 80)
+                        .overlay(
+                            VStack {
+                                Image(systemName: "bubble.left")
+                                Text("Popover")
+                            }
+                                .foregroundColor(.primary)
+                                .font(.caption)
+                        )
+                        .cornerRadius(12)
+                    }
                 }
             }
             .padding()
