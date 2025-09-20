@@ -1,5 +1,7 @@
 import SwiftUI
 
+// MARK: - Data
+
 #if os(macOS)
 extension Color {
     public var data: Data? {
@@ -35,6 +37,8 @@ extension Color {
     }
 }
 #endif
+
+// MARK: - Codable
 
 public struct CodableCGColor: Codable, Sendable {
     public var cgColor: CGColor
@@ -163,98 +167,7 @@ extension CodableCGColor {
     }
 }
 
-#Preview("Color Extensions Demo") {
-    struct ColorDemo: View {
-        @State private var randomColors: [(bg: CodableCGColor, fg: CodableCGColor)] = []
-        
-        var body: some View {
-            VStack(spacing: 20) {
-                VStack {
-                    Text("Random Background/Foreground Colors")
-                        .font(.headline)
-                    
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 10) {
-                        ForEach(0..<randomColors.count, id: \.self) { index in
-                            if #available(iOS 15.0, macOS 11.0, *) {
-                                Text("Sample \(index + 1)")
-                                    .padding()
-                                    .background(randomColors[index].bg.swiftuiColor)
-                                    .foregroundColor(randomColors[index].fg.swiftuiColor)
-                                    .cornerRadius(8)
-                            }
-                        }
-                    }
-                    
-                    Button("Generate New Colors") {
-                        randomColors = (0..<6).map { _ in CodableCGColor.randomBGFG() }
-                    }
-                }
-                .padding()
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(12)
-                
-                #if os(macOS) || (os(iOS) && compiler(>=5.9))
-                VStack {
-                    Text("Brightness Adjustments")
-                        .font(.headline)
-                    
-                    HStack(spacing: 20) {
-                        VStack {
-                            Text("Original")
-                            Rectangle()
-                                .fill(Color.blue)
-                                .frame(width: 60, height: 60)
-                        }
-                        
-                        #if os(macOS)
-                        VStack {
-                            Text("Brighter")
-                            Rectangle()
-                                .fill(Color.blue.brighter())
-                                .frame(width: 60, height: 60)
-                        }
-                        
-                        VStack {
-                            Text("Darker")
-                            Rectangle()
-                                .fill(Color.blue.darker())
-                                .frame(width: 60, height: 60)
-                        }
-                        #endif
-                        
-                        #if os(iOS) && compiler(>=5.9)
-                        if #available(iOS 15.0, *) {
-                            VStack {
-                                Text("Brighter")
-                                Rectangle()
-                                    .fill(Color.blue.brighter())
-                                    .frame(width: 60, height: 60)
-                            }
-                            
-                            VStack {
-                                Text("Darker")
-                                Rectangle()
-                                    .fill(Color.blue.darker())
-                                    .frame(width: 60, height: 60)
-                            }
-                        }
-                        #endif
-                    }
-                }
-                .padding()
-                .background(Color.green.opacity(0.1))
-                .cornerRadius(12)
-                #endif
-            }
-            .padding()
-            .onAppear {
-                randomColors = (0..<6).map { _ in CodableCGColor.randomBGFG() }
-            }
-        }
-    }
-    
-    return ColorDemo()
-}
+// MARK: - Brighter
 
 // Helper extension to modify brightness of a Color
 #if os(macOS)
@@ -321,3 +234,136 @@ extension Color {
     }
 }
 #endif
+
+// MARK: - Hex
+
+extension Color {
+  public static func hex(_ hex: UInt) -> Self {
+    Self(
+      red: Double((hex & 0xff0000) >> 16) / 255,
+      green: Double((hex & 0x00ff00) >> 8) / 255,
+      blue: Double(hex & 0x0000ff) / 255,
+      opacity: 1
+    )
+  }
+}
+
+#if canImport(UIKit)
+  import UIKit
+
+  extension Color {
+    public init(dynamicProvider: @escaping (UITraitCollection) -> Color) {
+      self = Self(UIColor { UIColor(dynamicProvider($0)) })
+    }
+
+    public func inverted() -> Self {
+      Self(UIColor(self).inverted())
+    }
+  }
+
+  extension UIColor {
+    public func inverted() -> Self {
+      Self {
+        self.resolvedColor(
+          with: .init(userInterfaceStyle: $0.userInterfaceStyle == .dark ? .light : .dark)
+        )
+      }
+    }
+  }
+#endif
+
+
+// MARK: - #Preview
+
+#Preview("Color Extensions Demo") {
+    struct ColorDemo: View {
+        @State private var randomColors: [(bg: CodableCGColor, fg: CodableCGColor)] = []
+
+        var body: some View {
+            VStack(spacing: 20) {
+                VStack {
+                    Text("Random Background/Foreground Colors")
+                        .font(.headline)
+
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 10) {
+                        ForEach(0..<randomColors.count, id: \.self) { index in
+                            if #available(iOS 15.0, macOS 11.0, *) {
+                                Text("Sample \(index + 1)")
+                                    .padding()
+                                    .background(randomColors[index].bg.swiftuiColor)
+                                    .foregroundColor(randomColors[index].fg.swiftuiColor)
+                                    .cornerRadius(8)
+                            }
+                        }
+                    }
+
+                    Button("Generate New Colors") {
+                        randomColors = (0..<6).map { _ in CodableCGColor.randomBGFG() }
+                    }
+                }
+                .padding()
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(12)
+
+                #if os(macOS) || (os(iOS) && compiler(>=5.9))
+                VStack {
+                    Text("Brightness Adjustments")
+                        .font(.headline)
+
+                    HStack(spacing: 20) {
+                        VStack {
+                            Text("Original")
+                            Rectangle()
+                                .fill(Color.blue)
+                                .frame(width: 60, height: 60)
+                        }
+
+                        #if os(macOS)
+                        VStack {
+                            Text("Brighter")
+                            Rectangle()
+                                .fill(Color.blue.brighter())
+                                .frame(width: 60, height: 60)
+                        }
+
+                        VStack {
+                            Text("Darker")
+                            Rectangle()
+                                .fill(Color.blue.darker())
+                                .frame(width: 60, height: 60)
+                        }
+                        #endif
+
+                        #if os(iOS) && compiler(>=5.9)
+                        if #available(iOS 15.0, *) {
+                            VStack {
+                                Text("Brighter")
+                                Rectangle()
+                                    .fill(Color.blue.brighter())
+                                    .frame(width: 60, height: 60)
+                            }
+
+                            VStack {
+                                Text("Darker")
+                                Rectangle()
+                                    .fill(Color.blue.darker())
+                                    .frame(width: 60, height: 60)
+                            }
+                        }
+                        #endif
+                    }
+                }
+                .padding()
+                .background(Color.green.opacity(0.1))
+                .cornerRadius(12)
+                #endif
+            }
+            .padding()
+            .onAppear {
+                randomColors = (0..<6).map { _ in CodableCGColor.randomBGFG() }
+            }
+        }
+    }
+
+    return ColorDemo()
+}
