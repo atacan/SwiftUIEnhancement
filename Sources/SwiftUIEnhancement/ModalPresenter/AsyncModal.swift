@@ -34,8 +34,9 @@ public final class ModalHandle<Output> {
 @MainActor
 public protocol ModalPresenter {
     associatedtype Token
+    associatedtype Content: View
 
-    func present<Content: View>(
+    func present(
         _ content: Content,
         onUserCancel: @escaping () -> Void
     ) -> Token
@@ -51,8 +52,8 @@ public final class AsyncUIRunner<P: ModalPresenter> {
         self.presenter = presenter
     }
 
-    public func run<Output, Content: View>(
-        @ViewBuilder content: @escaping (ModalHandle<Output>) -> Content
+    public func run<Output>(
+        @ViewBuilder content: @escaping (ModalHandle<Output>) -> P.Content
     ) async throws -> Output {
         try await withCheckedThrowingContinuation { continuation in
             var token: P.Token?
@@ -85,7 +86,7 @@ public protocol AwaitableModalView: View {
 }
 
 public extension AsyncUIRunner {
-    func run<V: AwaitableModalView>(_ viewType: V.Type = V.self) async throws -> V.Output {
+    func run<V: AwaitableModalView>(_ viewType: V.Type = V.self) async throws -> V.Output where P.Content == V {
         try await run { handle in
             V(handle: handle)
         }

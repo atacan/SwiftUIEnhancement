@@ -2,41 +2,45 @@ import SwiftUI
 
 @available(iOS 15, macOS 12, tvOS 15, watchOS 8, *)
 @MainActor
-public final class AlertPresenter: ObservableObject, ModalPresenter {
+public final class AlertPresenter<Actions: View, Message: View>: ObservableObject, ModalPresenter {
     public struct Token: Hashable {
         fileprivate let id: UUID
     }
 
     struct Item {
         let id: UUID
-        let actions: AnyView
+        let actions: Actions
         let onCancel: () -> Void
     }
 
     @Published var item: Item?
 
     public var title: LocalizedStringKey
-    public var message: AnyView
+    public var message: Message
 
     private var programmaticDismissID: UUID?
 
     public init(
         title: LocalizedStringKey,
-        @ViewBuilder message: () -> some View = { EmptyView() }
+        @ViewBuilder message: () -> Message
     ) {
         self.title = title
-        self.message = AnyView(message())
+        self.message = message()
     }
 
-    public func present<Content: View>(
-        _ content: Content,
+    public convenience init(title: LocalizedStringKey) where Message == EmptyView {
+        self.init(title: title, message: { EmptyView() })
+    }
+
+    public func present(
+        _ content: Actions,
         onUserCancel: @escaping () -> Void
     ) -> Token {
         if let existing = item {
             existing.onCancel()
         }
 
-        let newItem = Item(id: UUID(), actions: AnyView(content), onCancel: onUserCancel)
+        let newItem = Item(id: UUID(), actions: content, onCancel: onUserCancel)
         programmaticDismissID = nil
         item = newItem
         return Token(id: newItem.id)
@@ -75,8 +79,8 @@ public final class AlertPresenter: ObservableObject, ModalPresenter {
 }
 
 @available(iOS 15, macOS 12, tvOS 15, watchOS 8, *)
-private struct AlertPresenterModifier: ViewModifier {
-    @ObservedObject var presenter: AlertPresenter
+private struct AlertPresenterModifier<Actions: View, Message: View>: ViewModifier {
+    @ObservedObject var presenter: AlertPresenter<Actions, Message>
 
     func body(content: Content) -> some View {
         content.alert(presenter.title, isPresented: presenter.binding()) {
@@ -93,7 +97,7 @@ private struct AlertPresenterModifier: ViewModifier {
 
 @available(iOS 15, macOS 12, tvOS 15, watchOS 8, *)
 public extension View {
-    func alertPresenter(_ presenter: AlertPresenter) -> some View {
+    func alertPresenter<Actions: View, Message: View>(_ presenter: AlertPresenter<Actions, Message>) -> some View {
         modifier(AlertPresenterModifier(presenter: presenter))
     }
 }

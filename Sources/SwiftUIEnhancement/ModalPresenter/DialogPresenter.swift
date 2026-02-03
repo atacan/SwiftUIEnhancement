@@ -2,14 +2,14 @@ import SwiftUI
 
 @available(iOS 15, macOS 12, tvOS 15, watchOS 8, *)
 @MainActor
-public final class DialogPresenter: ObservableObject, ModalPresenter {
+public final class DialogPresenter<Actions: View, Message: View>: ObservableObject, ModalPresenter {
     public struct Token: Hashable {
         fileprivate let id: UUID
     }
 
     struct Item {
         let id: UUID
-        let actions: AnyView
+        let actions: Actions
         let onCancel: () -> Void
     }
 
@@ -17,29 +17,36 @@ public final class DialogPresenter: ObservableObject, ModalPresenter {
 
     public var title: LocalizedStringKey
     public var titleVisibility: Visibility
-    public var message: AnyView
+    public var message: Message
 
     private var programmaticDismissID: UUID?
 
     public init(
         title: LocalizedStringKey,
         titleVisibility: Visibility = .automatic,
-        @ViewBuilder message: () -> some View = { EmptyView() }
+        @ViewBuilder message: () -> Message
     ) {
         self.title = title
         self.titleVisibility = titleVisibility
-        self.message = AnyView(message())
+        self.message = message()
     }
 
-    public func present<Content: View>(
-        _ content: Content,
+    public convenience init(
+        title: LocalizedStringKey,
+        titleVisibility: Visibility = .automatic
+    ) where Message == EmptyView {
+        self.init(title: title, titleVisibility: titleVisibility, message: { EmptyView() })
+    }
+
+    public func present(
+        _ content: Actions,
         onUserCancel: @escaping () -> Void
     ) -> Token {
         if let existing = item {
             existing.onCancel()
         }
 
-        let newItem = Item(id: UUID(), actions: AnyView(content), onCancel: onUserCancel)
+        let newItem = Item(id: UUID(), actions: content, onCancel: onUserCancel)
         programmaticDismissID = nil
         item = newItem
         return Token(id: newItem.id)
@@ -78,8 +85,8 @@ public final class DialogPresenter: ObservableObject, ModalPresenter {
 }
 
 @available(iOS 15, macOS 12, tvOS 15, watchOS 8, *)
-private struct DialogPresenterModifier: ViewModifier {
-    @ObservedObject var presenter: DialogPresenter
+private struct DialogPresenterModifier<Actions: View, Message: View>: ViewModifier {
+    @ObservedObject var presenter: DialogPresenter<Actions, Message>
 
     func body(content: Content) -> some View {
         content.confirmationDialog(
@@ -100,7 +107,7 @@ private struct DialogPresenterModifier: ViewModifier {
 
 @available(iOS 15, macOS 12, tvOS 15, watchOS 8, *)
 public extension View {
-    func dialogPresenter(_ presenter: DialogPresenter) -> some View {
+    func dialogPresenter<Actions: View, Message: View>(_ presenter: DialogPresenter<Actions, Message>) -> some View {
         modifier(DialogPresenterModifier(presenter: presenter))
     }
 }

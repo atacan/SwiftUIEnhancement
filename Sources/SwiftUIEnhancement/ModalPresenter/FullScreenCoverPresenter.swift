@@ -2,14 +2,14 @@
 import SwiftUI
 
 @MainActor
-public final class FullScreenCoverPresenter: ObservableObject, ModalPresenter {
+public final class FullScreenCoverPresenter<Content: View>: ObservableObject, ModalPresenter {
     public struct Token: Hashable {
         fileprivate let id: UUID
     }
 
     struct Item: Identifiable {
         let id: UUID
-        let content: AnyView
+        let content: Content
         let onCancel: () -> Void
     }
 
@@ -20,7 +20,7 @@ public final class FullScreenCoverPresenter: ObservableObject, ModalPresenter {
 
     public init() {}
 
-    public func present<Content: View>(
+    public func present(
         _ content: Content,
         onUserCancel: @escaping () -> Void
     ) -> Token {
@@ -28,7 +28,7 @@ public final class FullScreenCoverPresenter: ObservableObject, ModalPresenter {
             existing.onCancel()
         }
 
-        let newItem = Item(id: UUID(), content: AnyView(content), onCancel: onUserCancel)
+        let newItem = Item(id: UUID(), content: content, onCancel: onUserCancel)
         programmaticDismissID = nil
         item = newItem
         lastItem = newItem
@@ -58,8 +58,8 @@ public final class FullScreenCoverPresenter: ObservableObject, ModalPresenter {
     }
 }
 
-private struct FullScreenCoverPresenterModifier: ViewModifier {
-    @ObservedObject var presenter: FullScreenCoverPresenter
+private struct FullScreenCoverPresenterModifier<Presented: View>: ViewModifier {
+    @ObservedObject var presenter: FullScreenCoverPresenter<Presented>
 
     func body(content: Content) -> some View {
         content.fullScreenCover(item: $presenter.item, onDismiss: {
@@ -71,7 +71,7 @@ private struct FullScreenCoverPresenterModifier: ViewModifier {
 }
 
 public extension View {
-    func fullScreenCoverPresenter(_ presenter: FullScreenCoverPresenter) -> some View {
+    func fullScreenCoverPresenter<Presented: View>(_ presenter: FullScreenCoverPresenter<Presented>) -> some View {
         modifier(FullScreenCoverPresenterModifier(presenter: presenter))
     }
 }

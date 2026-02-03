@@ -1,14 +1,14 @@
 import SwiftUI
 
 @MainActor
-public final class SheetPresenter: ObservableObject, ModalPresenter {
+public final class SheetPresenter<Content: View>: ObservableObject, ModalPresenter {
     public struct Token: Hashable {
         fileprivate let id: UUID
     }
 
     struct Item: Identifiable {
         let id: UUID
-        let content: AnyView
+        let content: Content
         let onCancel: () -> Void
     }
 
@@ -19,7 +19,7 @@ public final class SheetPresenter: ObservableObject, ModalPresenter {
 
     public init() {}
 
-    public func present<Content: View>(
+    public func present(
         _ content: Content,
         onUserCancel: @escaping () -> Void
     ) -> Token {
@@ -27,7 +27,7 @@ public final class SheetPresenter: ObservableObject, ModalPresenter {
             existing.onCancel()
         }
 
-        let newItem = Item(id: UUID(), content: AnyView(content), onCancel: onUserCancel)
+        let newItem = Item(id: UUID(), content: content, onCancel: onUserCancel)
         programmaticDismissID = nil
         item = newItem
         lastItem = newItem
@@ -57,8 +57,8 @@ public final class SheetPresenter: ObservableObject, ModalPresenter {
     }
 }
 
-private struct SheetPresenterModifier: ViewModifier {
-    @ObservedObject var presenter: SheetPresenter
+private struct SheetPresenterModifier<Presented: View>: ViewModifier {
+    @ObservedObject var presenter: SheetPresenter<Presented>
 
     func body(content: Content) -> some View {
         content.sheet(item: $presenter.item, onDismiss: {
@@ -70,7 +70,7 @@ private struct SheetPresenterModifier: ViewModifier {
 }
 
 public extension View {
-    func sheetPresenter(_ presenter: SheetPresenter) -> some View {
+    func sheetPresenter<Presented: View>(_ presenter: SheetPresenter<Presented>) -> some View {
         modifier(SheetPresenterModifier(presenter: presenter))
     }
 }

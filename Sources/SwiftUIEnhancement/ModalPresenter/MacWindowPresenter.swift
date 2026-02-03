@@ -1,18 +1,20 @@
 #if os(macOS)
 import AppKit
-import ObjectiveC
 import SwiftUI
 
 @MainActor
-public final class MacWindowPresenter: NSObject, ModalPresenter, NSWindowDelegate {
+public final class MacWindowPresenter<Content: View>: NSObject, ModalPresenter, NSWindowDelegate {
     public struct Token {
         fileprivate let window: NSWindow
-        fileprivate let cancel: () -> Void
     }
+
+    private var cancelHandlers: [ObjectIdentifier: () -> Void] = [:]
+    private var programmaticCloseIDs = Set<ObjectIdentifier>()
+    private var closingIDs = Set<ObjectIdentifier>()
 
     public override init() {}
 
-    public func present<Content: View>(
+    public func present(
         _ content: Content,
         onUserCancel: @escaping () -> Void
     ) -> Token {
@@ -30,32 +32,45 @@ public final class MacWindowPresenter: NSObject, ModalPresenter, NSWindowDelegat
         window.delegate = self
         window.center()
 
-        objc_setAssociatedObject(
-            window,
-            &Self.cancelKey,
-            onUserCancel,
-            .OBJC_ASSOCIATION_RETAIN_NONATOMIC
-        )
+        let id = ObjectIdentifier(window)
+        cancelHandlers[id] = onUserCancel
+        programmaticCloseIDs.remove(id)
 
         NSApp.activate(ignoringOtherApps: true)
         window.makeKeyAndOrderFront(nil)
 
-        return Token(window: window, cancel: onUserCancel)
+        return Token(window: window)
     }
 
     public func dismiss(_ token: Token) {
-        objc_setAssociatedObject(token.window, &Self.cancelKey, nil, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        let id = ObjectIdentifier(token.window)
+        if closingIDs.contains(id) {
+            cancelHandlers[id] = nil
+            programmaticCloseIDs.remove(id)
+            return
+        }
+
+        programmaticCloseIDs.insert(id)
         token.window.close()
     }
 
-    public func windowWillClose(_ notification: Notification) {
-        guard let window = notification.object as? NSWindow else { return }
-        if let cancel = objc_getAssociatedObject(window, &Self.cancelKey) as? (() -> Void) {
-            objc_setAssociatedObject(window, &Self.cancelKey, nil, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+    public func windowShouldClose(_ sender: NSWindow) -> Bool {
+        let id = ObjectIdentifier(sender)
+        closingIDs.insert(id)
+        defer { closingIDs.remove(id) }
+
+        if programmaticCloseIDs.contains(id) {
+            programmaticCloseIDs.remove(id)
+            cancelHandlers[id] = nil
+            return true
+        }
+
+        if let cancel = cancelHandlers[id] {
+            cancelHandlers[id] = nil
             cancel()
         }
-    }
 
-    private static var cancelKey: UInt8 = 0
+        return true
+    }
 }
 #endif

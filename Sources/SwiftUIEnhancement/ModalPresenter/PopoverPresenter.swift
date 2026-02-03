@@ -2,14 +2,14 @@
 import SwiftUI
 
 @MainActor
-public final class PopoverPresenter: ObservableObject, ModalPresenter {
+public final class PopoverPresenter<Content: View>: ObservableObject, ModalPresenter {
     public struct Token: Hashable {
         fileprivate let id: UUID
     }
 
     struct Item {
         let id: UUID
-        let content: AnyView
+        let content: Content
         let onCancel: () -> Void
     }
 
@@ -28,7 +28,7 @@ public final class PopoverPresenter: ObservableObject, ModalPresenter {
         self.arrowEdge = arrowEdge
     }
 
-    public func present<Content: View>(
+    public func present(
         _ content: Content,
         onUserCancel: @escaping () -> Void
     ) -> Token {
@@ -36,7 +36,7 @@ public final class PopoverPresenter: ObservableObject, ModalPresenter {
             existing.onCancel()
         }
 
-        let newItem = Item(id: UUID(), content: AnyView(content), onCancel: onUserCancel)
+        let newItem = Item(id: UUID(), content: content, onCancel: onUserCancel)
         programmaticDismissID = nil
         item = newItem
         return Token(id: newItem.id)
@@ -74,8 +74,8 @@ public final class PopoverPresenter: ObservableObject, ModalPresenter {
     }
 }
 
-private struct PopoverPresenterModifier: ViewModifier {
-    @ObservedObject var presenter: PopoverPresenter
+private struct PopoverPresenterModifier<Presented: View>: ViewModifier {
+    @ObservedObject var presenter: PopoverPresenter<Presented>
 
     func body(content: Content) -> some View {
         content.popover(
@@ -93,7 +93,7 @@ private struct PopoverPresenterModifier: ViewModifier {
 }
 
 public extension View {
-    func popoverPresenter(_ presenter: PopoverPresenter) -> some View {
+    func popoverPresenter<Presented: View>(_ presenter: PopoverPresenter<Presented>) -> some View {
         modifier(PopoverPresenterModifier(presenter: presenter))
     }
 }
