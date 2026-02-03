@@ -92,3 +92,19 @@ public extension AsyncUIRunner {
         }
     }
 }
+
+public extension AsyncUIRunner where P.Content == AnyView {
+    func runAny<Output, Content: View>(
+        @ViewBuilder content: @escaping (ModalHandle<Output>) -> Content
+    ) async throws -> Output {
+        try await run { handle in
+            AnyView(content(handle))
+        }
+    }
+
+    func runAny<V: AwaitableModalView>(_ viewType: V.Type = V.self) async throws -> V.Output {
+        try await run { handle in
+            AnyView(V(handle: handle))
+        }
+    }
+}
