@@ -4,6 +4,28 @@ import SwiftUI
 
 @MainActor
 public final class MacWindowPresenter<Content: View>: NSObject, ModalPresenter, NSWindowDelegate {
+    public struct Configuration: Sendable {
+        public var title: String
+        public var rect: CGRect
+        public var styleMask: NSWindow.StyleMask
+        public var centerOnScreen: Bool
+        public var makeKey: Bool
+
+        public init(
+            title: String = "Input Required",
+            rect: CGRect = CGRect(x: 0, y: 0, width: 520, height: 260),
+            styleMask: NSWindow.StyleMask = [.titled, .closable, .miniaturizable, .resizable],
+            centerOnScreen: Bool = true,
+            makeKey: Bool = true
+        ) {
+            self.title = title
+            self.rect = rect
+            self.styleMask = styleMask
+            self.centerOnScreen = centerOnScreen
+            self.makeKey = makeKey
+        }
+    }
+
     public struct Token {
         fileprivate let window: NSWindow
     }
@@ -11,8 +33,12 @@ public final class MacWindowPresenter<Content: View>: NSObject, ModalPresenter, 
     private var cancelHandlers: [ObjectIdentifier: () -> Void] = [:]
     private var programmaticCloseIDs = Set<ObjectIdentifier>()
     private var closingIDs = Set<ObjectIdentifier>()
+    private let configuration: Configuration
 
-    public override init() {}
+    public init(configuration: Configuration = Configuration()) {
+        self.configuration = configuration
+        super.init()
+    }
 
     public func present(
         _ content: Content,
@@ -21,23 +47,29 @@ public final class MacWindowPresenter<Content: View>: NSObject, ModalPresenter, 
         let hosting = NSHostingController(rootView: content)
 
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 520, height: 260),
-            styleMask: [.titled, .closable, .miniaturizable, .resizable],
+            contentRect: configuration.rect,
+            styleMask: configuration.styleMask,
             backing: .buffered,
             defer: false
         )
         window.contentViewController = hosting
-        window.title = "Input Required"
+        window.title = configuration.title
         window.isReleasedWhenClosed = false
         window.delegate = self
-        window.center()
 
         let id = ObjectIdentifier(window)
         cancelHandlers[id] = onUserCancel
         programmaticCloseIDs.remove(id)
 
         NSApp.activate(ignoringOtherApps: true)
-        window.makeKeyAndOrderFront(nil)
+        if configuration.makeKey {
+            window.makeKeyAndOrderFront(nil)
+        } else {
+            window.orderFront(nil)
+        }
+        if configuration.centerOnScreen {
+            window.center()
+        }
 
         return Token(window: window)
     }
