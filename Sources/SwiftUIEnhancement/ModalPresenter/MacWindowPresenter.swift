@@ -46,8 +46,9 @@ public final class MacWindowPresenter<Content: View>: NSObject, ModalPresenter, 
     ) -> Token {
         let hosting = NSHostingController(rootView: content)
 
+        let initialFrame = resolvedInitialFrame()
         let window = NSWindow(
-            contentRect: configuration.rect,
+            contentRect: initialFrame,
             styleMask: configuration.styleMask,
             backing: .buffered,
             defer: false
@@ -68,7 +69,12 @@ public final class MacWindowPresenter<Content: View>: NSObject, ModalPresenter, 
             window.orderFront(nil)
         }
         if configuration.centerOnScreen {
-            window.center()
+            window.contentView?.layoutSubtreeIfNeeded()
+            centerWindow(window)
+            Task { @MainActor in
+                await Task.yield()
+                centerWindow(window)
+            }
         }
 
         return Token(window: window)
@@ -103,6 +109,43 @@ public final class MacWindowPresenter<Content: View>: NSObject, ModalPresenter, 
         }
 
         return true
+    }
+
+    private func resolvedInitialFrame() -> CGRect {
+        if configuration.centerOnScreen {
+            if let screen = preferredScreen() {
+                return centeredFrame(for: configuration.rect, in: screen)
+            }
+        }
+        return configuration.rect
+    }
+
+    private func centerWindow(_ window: NSWindow) {
+        guard let screen = preferredScreen(for: window) else { return }
+        var size = window.frame.size
+        if size.width <= 0 || size.height <= 0 {
+            size = configuration.rect.size
+        }
+        let centered = centeredFrame(for: CGRect(origin: .zero, size: size), in: screen)
+        window.setFrame(centered, display: true)
+    }
+
+    private func preferredScreen(for window: NSWindow? = nil) -> NSScreen? {
+        window?.screen
+            ?? NSApp.keyWindow?.screen
+            ?? NSApp.mainWindow?.screen
+            ?? NSScreen.main
+            ?? NSScreen.screens.first
+    }
+
+    private func centeredFrame(for rect: CGRect, in screen: NSScreen) -> CGRect {
+        let visible = screen.visibleFrame
+        let size = rect.size
+        let origin = CGPoint(
+            x: visible.midX - size.width / 2,
+            y: visible.midY - size.height / 2
+        )
+        return CGRect(origin: origin, size: size)
     }
 }
 #endif
