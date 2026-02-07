@@ -1,5 +1,5 @@
 import SwiftUI
-import SwiftUIEnhancement
+import UsefulThingsSwiftUI
 
 @main
 struct ModalPresenterDemoApp: App {

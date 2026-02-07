@@ -1,6 +1,6 @@
-# SwiftUIEnhancement Build Guide
+# UsefulThingsSwiftUI Build Guide
 
-This document describes how to build and develop the SwiftUIEnhancement package for both macOS and iOS platforms.
+This document describes how to build and develop the UsefulThingsSwiftUI package for both macOS and iOS platforms.
 
 ## Prerequisites
 
@@ -87,12 +87,12 @@ If you prefer not to use the Makefile:
 
 ### macOS
 ```bash
-xcodebuild -scheme SwiftUIEnhancement -destination 'platform=macOS' build
+xcodebuild -scheme UsefulThingsSwiftUI -destination 'platform=macOS' build
 ```
 
 ### iOS Simulator
 ```bash
-xcodebuild -scheme SwiftUIEnhancement -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' build
+xcodebuild -scheme UsefulThingsSwiftUI -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' build
 ```
 
 ## Integration
@@ -101,12 +101,12 @@ Add to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "path/to/SwiftUIEnhancement", from: "1.0.0")
+    .package(url: "path/to/UsefulThingsSwiftUI", from: "1.0.0")
 ],
 targets: [
     .target(
         name: "YourTarget",
-        dependencies: ["SwiftUIEnhancement"]
+        dependencies: ["UsefulThingsSwiftUI"]
     )
 ]
 ```

@@ -50,10 +50,10 @@ This is a SwiftUI enhancement library that provides cross-platform UI components
 - **Cross-platform modifiers**: Color extensions, animations, layout utilities
 
 ### Code Organization
-- All source files are in `Sources/SwiftUIEnhancement/`
+- All source files are in `Sources/UsefulThingsSwiftUI/`
 - Each component is typically self-contained in a single file
 - Platform guards are used at the top level of files for entire implementations
-- Tests are in `Tests/SwiftUIEnhancementTests/`
+- Tests are in `Tests/UsefulThingsSwiftUITests/`
 
 ## Development Guidelines
 

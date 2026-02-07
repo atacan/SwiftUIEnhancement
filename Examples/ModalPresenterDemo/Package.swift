@@ -13,7 +13,7 @@ let package = Package(
         .executableTarget(
             name: "ModalPresenterDemo",
             dependencies: [
-                .product(name: "SwiftUIEnhancement", package: "SwiftUIEnhancement")
+                .product(name: "UsefulThingsSwiftUI", package: "UsefulThingsSwiftUI")
             ]
         )
     ]

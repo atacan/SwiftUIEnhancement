@@ -1,11 +1,11 @@
-# SwiftUIEnhancement Makefile
+# UsefulThingsSwiftUI Makefile
 # Build targets for iOS and macOS development
 
 .PHONY: help build-ios build-macos build-all clean test lint format
 
 # Default target
 help:
-	@echo "SwiftUIEnhancement Build System"
+	@echo "UsefulThingsSwiftUI Build System"
 	@echo ""
 	@echo "Available targets:"
 	@echo "  build-ios      - Build for iOS Simulator"
@@ -22,13 +22,13 @@ help:
 # Build targets
 build-ios:
 	@echo "Building for iOS Simulator..."
-	xcodebuild -scheme SwiftUIEnhancement \
+	xcodebuild -scheme UsefulThingsSwiftUI \
 		-destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
 		build
 
 build-macos:
 	@echo "Building for macOS..."
-	xcodebuild -scheme SwiftUIEnhancement \
+	xcodebuild -scheme UsefulThingsSwiftUI \
 		-destination 'platform=macOS' \
 		build
 
@@ -38,13 +38,13 @@ build-all: build-macos build-ios
 # Test targets
 test-ios:
 	@echo "Running tests on iOS Simulator..."
-	xcodebuild -scheme SwiftUIEnhancement \
+	xcodebuild -scheme UsefulThingsSwiftUI \
 		-destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
 		test
 
 test-macos:
 	@echo "Running tests on macOS..."
-	xcodebuild -scheme SwiftUIEnhancement \
+	xcodebuild -scheme UsefulThingsSwiftUI \
 		-destination 'platform=macOS' \
 		test
 
