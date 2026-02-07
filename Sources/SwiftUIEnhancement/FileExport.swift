@@ -1,8 +1,3 @@
-//
-// https://github.com/atacan
-// 27.06.24
-	
-
 import SwiftUI
 import UniformTypeIdentifiers
 
